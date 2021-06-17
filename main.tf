@@ -10,10 +10,11 @@ terraform {
 
 provider "docker" {}
 
-resource null_resource name {
+resource null_resource docker_vol {
 
   provisioner "local-exec" {
-    command = "mkdir noderedvol/ && sudo chown -R 1000:1000 noderedvol/"
+    command = "mkdir noderedvol/ || true && sudo chown -R 1000:1000 noderedvol/"
+    #command = "sudo bash"
   }
 }
 
@@ -47,6 +48,11 @@ resource "docker_container" "nodered_container" {
   ports {
     internal = var.int_port
     external = var.ext_port
+  }
+
+  volumes {
+    container_path = "/data"
+    host_path = "/Users/tomas/learn-terraform/terraform-docker/noderedvol"
   }
 }
 
