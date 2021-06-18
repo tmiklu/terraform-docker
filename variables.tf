@@ -1,12 +1,13 @@
 variable "ext_port" {
-  type    = number
+  type = list(any)
   #default = 1880
 
   validation {
-    condition =  var.ext_port <= 65535 && var.ext_port >= 1024
+    condition     = max(var.ext_port...) <= 65535 && min(var.ext_port...) > 1024
     error_message = "Port must be set between 1024 and 65535."
   }
 }
+
 
 variable "int_port" {
   type    = number
@@ -19,7 +20,6 @@ variable "int_port" {
   }
 }
 
-variable "container_count" {
-  type    = number
-  default = 1
+locals {
+  container_count = length(var.ext_port)
 }
