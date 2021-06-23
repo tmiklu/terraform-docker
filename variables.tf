@@ -14,11 +14,16 @@ variable "image" {
 
 
 variable "ext_port" {
-  type = list(any)
+  type = map(any)
   #default = 1880
 
   validation {
-    condition     = max(var.ext_port...) <= 65535 && min(var.ext_port...) > 1024
+    condition     = max(var.ext_port["dev"]...) <= 65535 && min(var.ext_port["dev"]...) >= 1980
+    error_message = "Port must be set between 1024 and 65535."
+  }
+
+  validation {
+    condition     = max(var.ext_port["prod"]...) <= 1980 && min(var.ext_port["prod"]...) >= 1880
     error_message = "Port must be set between 1024 and 65535."
   }
 }
@@ -36,5 +41,5 @@ variable "int_port" {
 }
 
 locals {
-  container_count = length(var.ext_port)
+  container_count = length(lookup(var.ext_port, var.env))
 }
