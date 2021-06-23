@@ -20,7 +20,8 @@ resource "null_resource" "docker_vol" {
 
 
 resource "docker_image" "nodered_image" {
-  name = "nodered/node-red:latest"
+  # curly braces {} are required only if you set map first time, var.image is already map
+  name = lookup(var.image, var.env)
 }
 
 resource "random_string" "random" {

@@ -1,3 +1,18 @@
+variable "env" {
+  type    = string
+  default = "dev"
+}
+
+variable "image" {
+  type        = map(any)
+  description = "Image for container"
+  default = {
+    dev  = "nodered/node-red:latest"
+    prod = "nodered/node-red:latest-minimal"
+  }
+}
+
+
 variable "ext_port" {
   type = list(any)
   #default = 1880
