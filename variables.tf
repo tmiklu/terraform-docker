@@ -1,8 +1,3 @@
-variable "env" {
-  type    = string
-  default = "dev"
-}
-
 variable "image" {
   type        = map(any)
   description = "Image for container"
@@ -41,5 +36,5 @@ variable "int_port" {
 }
 
 locals {
-  container_count = length(lookup(var.ext_port, var.env))
+  container_count = length(var.ext_port[terraform.workspace])
 }

@@ -1,15 +1,3 @@
-#specify providers
-terraform {
-  required_providers {
-    docker = {
-      source  = "kreuzwerker/docker"
-      version = "~> 2.7"
-    }
-  }
-}
-
-provider "docker" {}
-
 resource "null_resource" "docker_vol" {
 
   provisioner "local-exec" {
@@ -18,10 +6,8 @@ resource "null_resource" "docker_vol" {
   }
 }
 
-
-resource "docker_image" "nodered_image" {
-  # curly braces {} are required only if you set map first time, var.image is already map
-  name = lookup(var.image, var.env)
+module "image" {
+  source = "./image"
 }
 
 resource "random_string" "random" {
@@ -43,12 +29,13 @@ random_string.random[0]
 
 resource "docker_container" "nodered_container" {
   count = local.container_count
-  name  = join("-", ["nodereed", random_string.random[count.index].result])
-  image = docker_image.nodered_image.latest
+  name  = join("-", ["nodereed", terraform.workspace, random_string.random[count.index].result])
+  # access image output from module image
+  image = module.image.image_out
 
   ports {
     internal = var.int_port
-    external = lookup(var.ext_port, var.env)[count.index]
+    external = var.ext_port[terraform.workspace][count.index]
   }
 
   volumes {
