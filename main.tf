@@ -8,6 +8,7 @@ resource "null_resource" "docker_vol" {
 
 module "image" {
   source = "./image"
+  image_in = var.image[terraform.workspace]
 }
 
 resource "random_string" "random" {
