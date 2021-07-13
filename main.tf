@@ -7,7 +7,7 @@ resource "null_resource" "docker_vol" {
 }
 
 module "image" {
-  source = "./image"
+  source   = "./image"
   image_in = var.image[terraform.workspace]
 }
 
@@ -28,11 +28,13 @@ random_string.random[0]
 
 */
 
-resource "docker_container" "nodered_container" {
-  count = local.container_count
-  name  = join("-", ["nodereed", terraform.workspace, random_string.random[count.index].result])
+module "container" {
+  source     = "./container"
+  depends_on = [null_resource.docker_vol]
+  count      = local.container_count
+  name_in    = join("-", ["nodereed", terraform.workspace, random_string.random[count.index].result])
   # access image output from module image
-  image = module.image.image_out
+  image_in = module.image.image_out
 
   ports {
     internal = var.int_port
